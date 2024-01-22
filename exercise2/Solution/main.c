@@ -33,12 +33,26 @@ int main(int argc,char** argv){
 		printf("starting %d processes...\n",numtasks);
 	}
 	
+	/*
+	 * We perform  n = n/numtasks + (n%numtasks > 0 ? 1 : 0) just to
+	 * make n a multiplier of numtasks, i.e. we are assuming that the
+	 * data will be homogeneously scattered among the processes 
+	 *
+	 * */
 	n = n/numtasks + (n%numtasks > 0 ? 1 : 0);
+	/*
+	 * Generate the data for the current process
+	 * */
 	data_t* arr_data = generate_data(n);
 	printf("Data have been generated \n");
-	//print_data(arr_data,n);
-	
-	
+	/*
+	 * Select the algorithm:
+	 * 
+	 * p : parallel quicksort
+	 * n : nested parallel quicksort
+	 * default : serial quicksort
+	 *
+	 * */
 	switch(p)
 	{
 		case 'p':
@@ -53,12 +67,9 @@ int main(int argc,char** argv){
 			printf("Starting the serial quicksort...\n");
 			serial_quicksort( arr_data, 0, n-1);
 	}
-		
-	//print_data(arr_data,n);
 	
   	if ( verify_sorting( arr_data, 0, n-1, 0) )
     		printf("the array is sorted\n");
-		//printf("%d\t%g sec\n", nthreads, tend-tstart);
   	else
     		printf("the array is not sorted correctly\n");
 
@@ -81,24 +92,32 @@ int main(int argc,char** argv){
 		}
 	}
 	
-	//create an MPI data type for the data_t struct
+	/*
+	 * create an MPI data type for the data_t struct
+	 */
 	MPI_Datatype struct_data;
 	MPI_Type_contiguous(DATA_SIZE, MPI_DOUBLE, &struct_data);
 	MPI_Type_commit(&struct_data);
 	
-	// MPI_Gather(arr_data, n, struct_data, gathered_data, n, struct_data, 0, MPI_COMM_WORLD);
+	/*
+	 * run MPI_Gather
+	 * */
 	if(MPI_SUCCESS != MPI_Gather(arr_data,n,struct_data,gathered_data, n, struct_data, 0, MPI_COMM_WORLD)){
 		printf("MPI_gather error...\n");
 		return 0;
 	}
-		
+	/*
+	 * The master process (rank = 0) merges the gathered data
+	 * */
 	if (rank == 0){
 		printf("data have been gathered by process %d \n",rank);
 		merge_gathered_data(gathered_data,n,numtasks);
 		if ( verify_sorting( gathered_data, 0, n*numtasks-1, 0) )
                 	printf("the array is sorted\n");
         	else
-                printf("the array is not sorted correctly\n");
+                	printf("the array is not sorted correctly\n");
+
+		free( gathered_data );
 	}
 	
 	MPI_Finalize();
