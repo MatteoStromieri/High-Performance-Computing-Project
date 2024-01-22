@@ -5,33 +5,33 @@
 #include <omp.h>
 #include <stdlib.h>
 
-int verify_sorting( data_t *data, int start, int end, int not_used )
+int verify_sorting( hot_data_t *data, int start, int end, int not_used )
 {
   	int i = start;
-  	while( (++i < end) && (data[i].data[HOT] >= data[i-1].data[HOT]) );
+  	while( (++i < end) && (data[i].hot >= data[i-1].hot) );
   	return ( i == end );
 }
 
 int compare_ge( const void *A, const void *B )
 {
-        data_t *a = (data_t*)A;
-        data_t *b = (data_t*)B;
+        hot_data_t *a = (hot_data_t*)A;
+        hot_data_t *b = (hot_data_t*)B;
 	//printf("compare_ge \n");
-        return ((a->data)[HOT] >= (b->data)[HOT]);
+        return ((a->hot) >= (b->hot));
 }
 
-int partitioning( data_t *data, int start, int end){
+int partitioning( hot_data_t *data, int start, int end){
 	int middle = (end + start) / 2;
 
     	// Ensure data[start] <= data[middle] <= data[end]
     	if (compare_ge((void*)&data[start],(void*)&data[middle]))
-        	SWAP((void*)&data[start], (void*)&data[middle], sizeof(data_t));
+        	SWAP((void*)&data[start], (void*)&data[middle], sizeof(hot_data_t));
     	if(compare_ge((void*)&data[middle],(void*)&data[end]))
-        	SWAP((void*)&data[middle], (void*)&data[end], sizeof(data_t));
+        	SWAP((void*)&data[middle], (void*)&data[end], sizeof(hot_data_t));
     	if(compare_ge((void*)&data[start],(void*)&data[middle]))
-        	SWAP((void*)&data[start], (void*)&data[middle], sizeof(data_t));
+        	SWAP((void*)&data[start], (void*)&data[middle], sizeof(hot_data_t));
 	
-	SWAP((void*)&data[end],(void*)&data[middle],sizeof(data_t));
+	SWAP((void*)&data[end],(void*)&data[middle],sizeof(hot_data_t));
 	// now the pivot is the last element of the list
 	void* pivot = (void*)&data[end];
 	
@@ -43,16 +43,16 @@ int partitioning( data_t *data, int start, int end){
         		while( (pointbreak > i) && compare_ge( (void*)&data[pointbreak], pivot ) ) 
 				pointbreak--;
         		if (pointbreak > i ){
-          			SWAP( (void*)&data[i], (void*)&data[pointbreak], sizeof(data_t) );          
+          			SWAP( (void*)&data[i], (void*)&data[pointbreak], sizeof(hot_data_t) );          
 				pointbreak--;
         		}
       		}
 	pointbreak += !compare_ge( (void*)&data[pointbreak], pivot ) ;
-  	SWAP( (void*)&data[pointbreak], pivot, sizeof(data_t) );	
+  	SWAP( (void*)&data[pointbreak], pivot, sizeof(hot_data_t) );	
 	return pointbreak;
 }
 
-void serial_quicksort( data_t *data, int start, int end)
+void serial_quicksort( hot_data_t *data, int start, int end)
 {
 	//printf("\n Quicksort call \n");
 	int size = end-start+1;
@@ -66,11 +66,11 @@ void serial_quicksort( data_t *data, int start, int end)
   	else
     	{	
       		if ( (size == 2) && compare_ge ( (void*)&data[start], (void*)&data[end] ) )
-        		SWAP( (void*)&data[start], (void*)&data[end], sizeof(data_t) );
+        		SWAP( (void*)&data[start], (void*)&data[end], sizeof(hot_data_t) );
     	}	
 }
 
-void parallel_quicksort_nested( data_t* data, int start, int end)
+void parallel_quicksort_nested( hot_data_t* data, int start, int end)
 {
 	
 	int size = end-start+1;
@@ -93,11 +93,11 @@ void parallel_quicksort_nested( data_t* data, int start, int end)
   	else
     	{	
       		if ( (size == 2) && compare_ge ( (void*)&data[start], (void*)&data[end] ) )
-        		SWAP( (void*)&data[start], (void*)&data[end], sizeof(data_t) );
+        		SWAP( (void*)&data[start], (void*)&data[end], sizeof(hot_data_t) );
     	}	
 }
 
-int verify_partition_sorting(data_t* data,int* starts,int end, int parts)
+int verify_partition_sorting(hot_data_t* data,int* starts,int end, int parts)
 {
 	int v = 0;
 	int tmp = 0;
@@ -114,7 +114,7 @@ int verify_partition_sorting(data_t* data,int* starts,int end, int parts)
 	
 }
 
-void parallel_quicksort( data_t* data, int start, int end)
+void parallel_quicksort( hot_data_t* data, int start, int end)
 {
 	int nThreads;
 	int* starts;
@@ -144,7 +144,7 @@ void parallel_quicksort( data_t* data, int start, int end)
 	 *Now, we have that our array is made up by nThreads sorted sub-arrays, let's merge them
 	 * */
 	verify_partition_sorting(data,starts,end,nThreads);
-	if (nThreads > 1){
+	if(nThreads > 1){
 		printf("merging arrays...\n");
 		merge_all(data,starts,end+1,nThreads);
 	}

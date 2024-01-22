@@ -4,9 +4,9 @@
 #include <omp.h>
 #include <stdio.h>
 
-data_t* generate_data(int n){
+hot_data_t* generate_data(int n){
 	
-	data_t *arr_data = (data_t*)malloc(n*sizeof(data_t));
+	hot_data_t *arr_data = (hot_data_t*)malloc(n*sizeof(hot_data_t));
   	long int seed;
  	#if defined(_OPENMP)
  	#pragma omp parallel
@@ -17,7 +17,7 @@ data_t* generate_data(int n){
 
    		#pragma omp for
     		for ( int i = 0; i < n; i++ )
-      			arr_data[i].data[HOT] = erand48( seeds );
+      			arr_data[i].hot = erand48( seeds );
   	}
  	#else
   	{
@@ -26,7 +26,7 @@ data_t* generate_data(int n){
 		
 		printf("Writing the array \n");
     		for ( int i = 0; i < n; i++ ){
-      			arr_data[i].data[HOT] = drand48();
+      			arr_data[i].hot = drand48();
 		}
 		printf("Done writing the array \n");
 	}
