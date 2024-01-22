@@ -1,0 +1,48 @@
+Processes: 2
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             0.29              0.29              0.29        1000
+====================
+Processes: 4
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             0.61              0.60              0.61        1000
+====================
+Processes: 8
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             1.51              1.51              1.51        1000
+====================
+Processes: 16
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             2.12              2.12              2.12        1000
+====================
+Processes: 32
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             3.37              3.36              3.37        1000
+====================
+Processes: 64
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             4.25              4.23              4.25        1000
+====================
+Processes: 128
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             6.04              6.04              6.04        1000
+====================
+Processes: 256
+
+# OSU MPI Barrier Latency Test v7.3
+# Avg Latency(us)   Min Latency(us)   Max Latency(us)  Iterations
+             9.94              9.91              9.94        1000
+====================
